@@ -207,10 +207,11 @@ class SocketServer():
             conn = self.connection_map[conn_id]
             type = packet.get_char()
             pipeline = packet.get_char()
+            req_cam_id = packet.get_int()
             logging.debug("Received VP_SESSION message from conn:%s, " \
-                          "type=%s, pipeline=%s" 
-                          %(conn_id, VP_TYPE[type], PIPELINE[pipeline]))
-            self.newVPSession(conn, type, pipeline, conn_id)
+                          "type=%s, pipeline=%s requested camera id=%d" 
+                          %(conn_id, VP_TYPE[type], PIPELINE[pipeline], req_cam_id))
+            self.newVPSession(conn, type, pipeline, conn_id, req_cam_id)
 
         elif message_type == SYNC_SESSION:
             vv_id = packet.get_int()
@@ -260,7 +261,7 @@ class SocketServer():
                 self.activeSessions[conn_id].newMessage(message_type, packet)
 
 
-    def newVPSession(self, conn, type, pipeline, conn_id):
+    def newVPSession(self, conn, type, pipeline, conn_id, req_cam_id):
 
         if type == VP_ADVANCED:
             camera_type = -1
@@ -269,7 +270,8 @@ class SocketServer():
             elif pipeline == PTZ_PIPELINE:
                 camera_type = ACTIVE_CAMERA
             if camera_type != -1:
-                cam = self.cam_mgr.getAvailableCamera(camera_type)
+                #cam = self.cam_mgr.getAvailableCamera(camera_type)
+                cam = self.cam_mgr.getRequestedCamera(camera_type, req_cam_id)
                 if cam:
                     session = VPSession(conn_id, conn, self, VP, pipeline)
                     session.addCamera(cam.getId())

@@ -53,8 +53,8 @@ class RCCamera(PTZCamera):
         self.vp_type = None
         self.task = None
         self.type = type
-        self.image_width = 640
-        self.image_height = 480
+        self.image_width = 448
+        self.image_height = 336
         PTZCamera.__init__(self, id, type, pos, up, dir)
 
 

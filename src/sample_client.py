@@ -57,6 +57,7 @@ VP_CAM_ZOOM = 107
 VP_CAM_DEFAULT = 108
 VP_CAM_IMAGE = 109
 VP_CAM_RESOLUTION = 110
+VP_CAM_CUSTOM_PAN = 111
 
 SYNC_SESSION = 200
 SYNC_REQ_CAM_LIST = 201
@@ -69,11 +70,23 @@ ACTIVE_PIPELINE = 1
 
 SESSION_TYPE = 1
 
+ANY_AVAILABLE_CAMERA = 0
+
+DEFAULT_PAN_SPEED = 20.0 #degrees per second
+DEFAULT_TILT_SPEED = 20.0 #degrees per second
+DEFAULT_ZOOM_SPEED = 20.0 #degrees per second
+
+panEVT_CUSTOM = wx.NewEventType()
+tiltEVT_CUSTOM = wx.NewEventType()
+zoomEVT_CUSTOM = wx.NewEventType()
+getImageEVT_CUSTOM = wx.NewEventType()
+
 class MyFrame(wx.Frame):
-    def __init__(self, parent, id, title, ip_address, port, pipeline,
+    def __init__(self, parent, id, title, ip_address, port, pipeline, req_cam_id,
                  save_images=False):
         wx.Frame.__init__(self, parent, id, title, size=(230, 360))
 
+        self.req_cam_id = req_cam_id;
         panel = wx.Panel(self, -1)
         wx.Button(panel, 100, "Pan Left", (10,0), (100,30))
         wx.Button(panel, 101, "Pan Right", (120,0), (100,30))
@@ -117,8 +130,8 @@ class MyFrame(wx.Frame):
         self.Bind(wx.EVT_TIMER, self.step, self.timer)
         self.timer.Start(0.01 * 1000.0, oneShot=False)
 
-        self.Bind(wx.EVT_BUTTON, self.pan, id=100)
-        self.Bind(wx.EVT_BUTTON, self.pan, id=101)
+        self.Bind(wx.EVT_BUTTON, self.panLeft, id=100)
+        self.Bind(wx.EVT_BUTTON, self.panRight, id=101)
         self.Bind(wx.EVT_BUTTON, self.tilt, id=102)
         self.Bind(wx.EVT_BUTTON, self.tilt, id=103)
         self.Bind(wx.EVT_BUTTON, self.zoom, id=104)
@@ -129,6 +142,15 @@ class MyFrame(wx.Frame):
 
         self.save_images = save_images
 
+	EVT_CUSTOM_PAN = wx.PyEventBinder(panEVT_CUSTOM, 1)
+	EVT_CUSTOM_TILT = wx.PyEventBinder(tiltEVT_CUSTOM, 1)
+	EVT_CUSTOM_ZOOM = wx.PyEventBinder(zoomEVT_CUSTOM, 1)
+	EVT_CUSTOM_GET_IMAGE = wx.PyEventBinder(getImageEVT_CUSTOM, 1)
+	
+	self.Bind(EVT_CUSTOM_PAN, self.customPan)
+	self.Bind(EVT_CUSTOM_TILT, self.customTilt)
+	self.Bind(EVT_CUSTOM_ZOOM, self.customZoom)
+	self.Bind(EVT_CUSTOM_GET_IMAGE, self.getImage)
      
     def step(self, event):
         self.reader_polling()
@@ -150,7 +172,6 @@ class MyFrame(wx.Frame):
         data = ""
         try:
             data = self.client_socket.recv(1024)
-
         except socket.error, ex:
             pass
 
@@ -202,24 +223,32 @@ class MyFrame(wx.Frame):
             self.write_packet(w)
 
 
-    def pan(self, event):
-        id = event.GetEventObject().GetId()
+    def panLeft(self, event):
+	self.pan(-1)
 
-        if id == 100:
-            direction = -1
+    def panRight(self, event):
+	self.pan(1)
 
-        else:
-            direction = 1
-
-        angle = direction * 10
+    def pan(self, direction, degrees = 10, speed = DEFAULT_PAN_SPEED):
+        angle = direction * degrees
         w = SocketPacket()
         w.add_int(VP_CAM_PAN)
         w.add_int(self.client_id)
         w.add_int(self.cam_id)
         w.add_float(angle)
+	w.add_float(speed)
         w.encode_header()
         self.write_packet(w)
 
+    def customPan(self, event):
+        w = SocketPacket()
+	w.add_int(VP_CAM_CUSTOM_PAN)
+        w.add_int(self.client_id)
+        w.add_int(self.cam_id)
+        w.add_float(event.GetDegrees())
+	w.add_float(event.GetSpeed())
+        w.encode_header()
+        self.write_packet(w)
 
     def tilt(self, event):
         id = event.GetEventObject().GetId()
@@ -236,9 +265,19 @@ class MyFrame(wx.Frame):
         w.add_int(self.client_id)
         w.add_int(self.cam_id)
         w.add_float(angle)
+        w.add_float(DEFAULT_TILT_SPEED)
         w.encode_header()
         self.write_packet(w)
 
+    def customTilt(self, event):
+        w = SocketPacket()
+	w.add_int(VP_CAM_TILT)
+        w.add_int(self.client_id)
+        w.add_int(self.cam_id)
+        w.add_float(event.GetDegrees())
+	w.add_float(event.GetSpeed())
+        w.encode_header()
+        self.write_packet(w)
 
     def zoom(self, event):
         id = event.GetEventObject().GetId()
@@ -255,9 +294,19 @@ class MyFrame(wx.Frame):
         w.add_int(self.client_id)
         w.add_int(self.cam_id)
         w.add_float(angle)
+        w.add_float(DEFAULT_ZOOM_SPEED)
         w.encode_header()
         self.write_packet(w)
 
+    def customZoom(self, event):
+        w = SocketPacket()
+	w.add_int(VP_CAM_ZOOM)
+        w.add_int(self.client_id)
+        w.add_int(self.cam_id)
+        w.add_float(event.GetDegrees())
+	w.add_float(event.GetSpeed())
+        w.encode_header()
+        self.write_packet(w)
 
     def default(self, event):
         w = SocketPacket()
@@ -290,6 +339,7 @@ class MyFrame(wx.Frame):
           w.add_int(self.client_id)
           w.add_char(SESSION_TYPE)
           w.add_char(self.pipeline)
+          w.add_int(self.req_cam_id)
           w.encode_header()
           self.write_packet(w)
 
@@ -323,12 +373,12 @@ class MyFrame(wx.Frame):
             image = packet.get_string()
 
             cv_im = self.createImage(image, width, height, depth, color_code, jpeg)
-
             self.camera_id = cam_id
-            cv.ShowImage("Image", cv_im)
             if self.save_images:
                 cv.SaveImage("cam%s_%s.jpg" % (cam_id, self.count), cv_im)
                 self.count+=1
+            else:
+		cv.ShowImage("Image", cv_im)
             cv.WaitKey()
 
 
@@ -356,13 +406,14 @@ def main():
         const=STATIC_PIPELINE, default=ACTIVE_PIPELINE)
     parser.add_argument('--debug', dest='debug', action='store_const',
         const=logging.DEBUG, default=logging.INFO, help='show debug messages')
+    parser.add_argument('-c', dest = 'req_cam_id', type = int, default = ANY_AVAILABLE_CAMERA, help = 'camera_id of the requested camera to be linked with the client')
     args = parser.parse_args()
 
     logging.basicConfig(format='%(levelname)s: %(message)s', level=args.debug)
 
     app = wx.App()
     frame = MyFrame(None, -1, 'Sample Client', args.address, args.port,
-        args.pipeline, save_images=args.save_images)
+        args.pipeline, args.req_cam_id, save_images=args.save_images)
     frame.Show(True)
     app.MainLoop()
 

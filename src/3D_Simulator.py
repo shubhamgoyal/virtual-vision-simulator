@@ -96,6 +96,8 @@ def main():
         server = SocketServer(args.port, virtual_world, camera_manager,
             args.sync)
 
+    virtual_world.assign_display_region_to_camera()
+            
     # Start the main event loop that runs the world.
     virtual_world.run()
 

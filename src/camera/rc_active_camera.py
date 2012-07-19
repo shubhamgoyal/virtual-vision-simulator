@@ -52,8 +52,8 @@ class RCActiveCamera(PTZCamera):
         self.vp_type = None
         self.task = None
         self.type = type
-        self.image_width = 640
-        self.image_height = 480
+        self.image_width = 448
+        self.image_height = 336
         PTZCamera.__init__(self, id, type, pos, up, dir)
 
 
@@ -157,18 +157,23 @@ class RCActiveCamera(PTZCamera):
         """
         conn_id = self.vp.conn_id
         if type == VP_CAM_PAN:
-            angle = dVP_CAM_PAN(message)
-            time = float(fabs(angle)) / SPEED
+            angle, speed = dVP_CAM_PAN(message)
+            time = float(fabs(angle)) / speed
             if angle > 0.0:
                 self.panRight(angle, time)
             else:
                 self.panLeft(-angle, time)
 
             logging.debug("Received VP_CAM_PAN message from conn:%s" % conn_id)
+            
+        elif type == VP_CAM_CUSTOM_PAN:
+	    angular_position, speed = dVP_CAM_CUSTOM_PAN(message)
+	    self.customPan(angular_position, speed)
+	    logging.debug("Received VP_CAM_CUSTOM_PAN message from conn:%s" % conn_id)
         
         elif type == VP_CAM_TILT:
-            angle = dVP_CAM_TILT(message)
-            time = float(fabs(angle)) / SPEED
+            angle, speed = dVP_CAM_TILT(message)
+            time = float(fabs(angle)) / speed
             if angle > 0.0:
                 self.tiltUp(angle, time)
             else:
@@ -177,8 +182,8 @@ class RCActiveCamera(PTZCamera):
             logging.debug("Received VP_CAM_TILT message from conn:%s" % conn_id)
         
         elif type == VP_CAM_ZOOM:
-            angle = dVP_CAM_ZOOM(message)
-            time = float(fabs(angle)) / SPEED
+            angle, speed = dVP_CAM_ZOOM(message)
+            time = float(fabs(angle)) / speed
             if angle > 0.0:
                 self.zoomOut(angle, time)
             else:

@@ -28,6 +28,7 @@ import sys
 
 from pandac.PandaModules import Filename
 from pandac.PandaModules import Spotlight
+from pandac.PandaModules import Vec3, VBase4
 from direct.actor.Actor import Actor
 from simulator.panda3d.panda_object import PandaObject
 

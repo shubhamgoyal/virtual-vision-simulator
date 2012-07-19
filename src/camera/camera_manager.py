@@ -25,6 +25,8 @@
 import logging
 from camera.camera_builder import (ACTIVE_CAMERA, STATIC_CAMERA)
 
+ANY_AVAILABLE_CAMERA = 0
+
 class CameraManager:
 
     def __init__(self):
@@ -69,6 +71,17 @@ class CameraManager:
                 return camera
         return None
 
+    
+    def getRequestedCamera(self, type, req_cam_id):
+	if req_cam_id == ANY_AVAILABLE_CAMERA:
+	    return self.getAvailableCamera(type)
+	else:
+	    req_cam = self.getCameraById(req_cam_id)
+	    if req_cam != None:
+		if not req_cam.hasSession() and req_cam.getType() == type:
+		  return req_cam
+	return None
+	    
 
     def sendMessage(self, cam_id, message):
         if cam_id in self.local_cameras:

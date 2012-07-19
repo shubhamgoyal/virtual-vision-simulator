@@ -21,9 +21,8 @@
 # If not, see <http://www.gnu.org/licenses/>.
 #
 
-
+from math import fabs
 from panda_camera import PandaCamera
-
 from motor import *
 
 class PandaPTZCamera(PandaCamera):
@@ -57,6 +56,13 @@ class PandaPTZCamera(PandaCamera):
         current = self.getPan()
         new = current + angle
         self.pan_motor.newValue(current, new, time)
+        
+        
+    def customPan(self, angular_position, speed):
+	current = self.getPan()
+	new = angular_position
+	time = float(fabs(angular_position - current)) / speed
+	self.pan_motor.newValue(current, new, time)
         
         
     def tiltUp(self, angle=10, time=1.0):

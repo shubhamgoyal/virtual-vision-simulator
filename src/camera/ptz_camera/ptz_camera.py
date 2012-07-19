@@ -71,6 +71,11 @@ class PTZCamera:
     def panRight(self, angle=10, time=1.0):
         if self.panda_camera:
             self.panda_camera.panRight(angle, time)
+            
+    
+    def customPan(self, angular_position, speed):
+        if self.panda_camera:
+            self.panda_camera.customPan(angular_position, speed)
         
         
     def tiltUp(self, angle=10, time=1.0):
