@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <pedestrians>
-    <pedestrian character="CMan0011" texture='CMan0011_8.png' pos='-575 90 -320' scale='100' hpr='180 0 0'>
+    <!--<pedestrian character="CMan0011" texture='CMan0011_8.png' pos='-575 90 -320' scale='100' hpr='180 0 0'>
         <commands start_time='0'>stand stand stand stand stand stand stand stand stand stand stand stand stand stand stand stand stand stand stand stand stand stand stand stand stand stand stand stand stand stand stand stand stand stand stand</commands>
     </pedestrian>
     <pedestrian character="CMan0011" texture='CMan0011_8.png' pos='575 90 -320' scale='100' hpr='180 0 0'>
@@ -14,7 +14,7 @@
     </pedestrian>
     <pedestrian character="CMan0011" texture='CMan0011_8.png' pos='0 0 0' scale='25' hpr='180 0 0'>
         <commands start_time='0'>stand stand stand stand stand stand stand stand stand stand stand stand stand stand stand stand stand stand stand stand stand stand stand stand stand stand stand stand stand stand stand stand stand stand stand</commands>
-    </pedestrian>
+    </pedestrian>-->
     <pedestrian character="CMan0011" texture='CMan0011_1.png' pos='575 90 -320' scale='25' hpr='180 0 0'>
         <commands start_time='0'>stand stand stand stand stand stand stand stand stand stand stand stand stand stand stand stand stand stand stand stand stand stand stand stand stand stand stand stand stand stand stand stand stand stand stand</commands>
     </pedestrian>

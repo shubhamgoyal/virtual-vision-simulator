@@ -46,6 +46,15 @@ class PandaPTZCamera(PandaCamera):
         self.zoom_motor.newValue(current, new, time)
         
         
+    def customZoom(self, angular_position, speed):
+	current = self.getFov()
+	new = angular_position
+	if current == new:
+	    return
+	time = float(fabs(angular_position - current)) / speed
+        self.zoom_motor.newValue(current, new, time)
+        
+        
     def panLeft(self, angle=10, time=1.0):
         current = self.getPan()
         new = current - angle
@@ -61,6 +70,8 @@ class PandaPTZCamera(PandaCamera):
     def customPan(self, angular_position, speed):
 	current = self.getPan()
 	new = angular_position
+	if current == new:
+	    return
 	time = float(fabs(angular_position - current)) / speed
 	self.pan_motor.newValue(current, new, time)
         
@@ -75,6 +86,15 @@ class PandaPTZCamera(PandaCamera):
         current = self.getTilt()
         new = current - angle
         self.tilt_motor.newValue(current, new, time)
+        
+        
+    def customTilt(self, angular_position, speed):
+	current = self.getTilt()
+	new = angular_position
+	if current == new:
+	    return	
+	time = float(fabs(angular_position - current)) / speed
+	self.tilt_motor.newValue(current, new, time)
         
         
     def revertToDefault(self, time=1.0):

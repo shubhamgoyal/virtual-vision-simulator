@@ -180,6 +180,11 @@ class RCActiveCamera(PTZCamera):
                 self.tiltDown(-angle, time)
 
             logging.debug("Received VP_CAM_TILT message from conn:%s" % conn_id)
+            
+        elif type == VP_CAM_CUSTOM_TILT:
+	    angular_position, speed = dVP_CAM_CUSTOM_TILT(message)
+	    self.customTilt(angular_position, speed)
+	    logging.debug("Received VP_CAM_CUSTOM_TILT message from conn:%s" % conn_id)
         
         elif type == VP_CAM_ZOOM:
             angle, speed = dVP_CAM_ZOOM(message)
@@ -190,6 +195,11 @@ class RCActiveCamera(PTZCamera):
                 self.zoomIn(-angle, time)
 
             logging.debug("Received VP_CAM_ZOOM message from conn:%s" % conn_id)
+            
+	elif type == VP_CAM_CUSTOM_ZOOM:
+	    angular_position, speed = dVP_CAM_CUSTOM_ZOOM(message)
+	    self.customZoom(angular_position, speed)
+	    logging.debug("Received VP_CAM_CUSTOM_ZOOM message from conn:%s" % conn_id)
         
         elif type == VP_CAM_DEFAULT:
             self.revertToDefault(4.0)
@@ -198,8 +208,7 @@ class RCActiveCamera(PTZCamera):
 
         elif type == VP_CAM_IMAGE:
             self.sendFrame()
-            logging.debug("Received VP_GET_IMAGE message from conn:%s" % conn_id)
-        
+            #logging.debug("Received VP_GET_IMAGE message from conn:%s" % conn_id)
 
         elif type == VP_CAM_RESOLUTION:
             self.image_width, self.image_height = dVP_CAM_RESOLUTION(message)

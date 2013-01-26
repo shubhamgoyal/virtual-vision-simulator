@@ -56,6 +56,8 @@ VP_CAM_DEFAULT = 108
 VP_CAM_IMAGE = 109
 VP_CAM_RESOLUTION = 110
 VP_CAM_CUSTOM_PAN = 111
+VP_CAM_CUSTOM_TILT = 112
+VP_CAM_CUSTOM_ZOOM = 113
 
 SYNC_SESSION = 200
 SYNC_REQ_CAM_LIST = 201
@@ -329,12 +331,24 @@ def dVP_CAM_TILT(packet):
     angle = packet.get_float()
     speed = packet.get_float()
     return (angle, speed)
+    
+    
+def dVP_CAM_CUSTOM_TILT(packet):
+    angular_position = packet.get_float()
+    speed = packet.get_float()
+    return (angular_position, speed)
 
 
 def dVP_CAM_ZOOM(packet):
     angle = packet.get_float()
     speed = packet.get_float()
     return (angle, speed)
+    
+    
+def dVP_CAM_CUSTOM_ZOOM(packet):
+    angular_position = packet.get_float()
+    speed = packet.get_float()
+    return (angular_position, speed)
 
 
 def dVP_CAM_DEFAULT(packet):

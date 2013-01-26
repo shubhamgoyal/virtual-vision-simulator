@@ -40,7 +40,7 @@ class Motor:
     def update(self, increment):
         if self.is_running:
             self.cur_time += increment
-            progress = self.curve.getValue(self.cur_time / self.duration)
+	    progress = self.curve.getValue(self.cur_time / self.duration)
             new_value = self.start_value + progress * self.difference
             eval("self.object_ptr.%s(%s)" % (self.method, new_value))
             

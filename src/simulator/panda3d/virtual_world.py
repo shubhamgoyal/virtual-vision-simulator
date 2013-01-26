@@ -250,7 +250,7 @@ class VirtualWorld(ShowBase):
         parser = SceneFileParser(self.model, object_builder, light_builder)
         parser.parse(scene_file)
         
-        self.setUpLights()
+        #self.setUpLights()
 
 
     def setUpLights(self):

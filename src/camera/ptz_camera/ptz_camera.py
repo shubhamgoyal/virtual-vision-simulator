@@ -61,6 +61,11 @@ class PTZCamera:
     def zoomOut(self, angle=10, time=1.0):
         if self.panda_camera:
             self.panda_camera.zoomOut(angle, time)
+            
+            
+    def customZoom(self, angular_position, speed):
+	if self.panda_camera:
+	    self.panda_camera.customZoom(angular_position, speed)
         
         
     def panLeft(self, angle=10, time=1.0):
@@ -86,6 +91,11 @@ class PTZCamera:
     def tiltDown(self, angle=10, time=1.0):
         if self.panda_camera:
             self.panda_camera.tiltDown(angle, time)
+            
+            
+    def customTilt(self, angular_position, speed):
+	if self.panda_camera:
+	    self.panda_camera.customTilt(angular_position, speed)
         
         
     def revertToDefault(self, time=1.0):

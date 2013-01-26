@@ -153,22 +153,29 @@ class MyFrame(wx.Frame):
 	self.Bind(EVT_CUSTOM_GET_IMAGE, self.getImage)
      
     def step(self, event):
+	"""try:
+	    print "stepping ", self.cam_id
+	except:
+	    print "stepping"""
         self.reader_polling()
         self.write_polling()
 
 
     def write_packet(self, packet):
+	print "Here in write_packet\n"
         self.write_buffer = self.write_buffer + packet.get_header() + packet.get_body()
 
 
     def write_polling(self):
         if self.write_buffer <> '':
             self.client_socket.send(self.write_buffer)
+            print "write buffer sent\n"
         self.write_buffer = ''
         return
 
 
     def reader_polling(self):
+	#print "In reader_polling\n"
         data = ""
         try:
             data = self.client_socket.recv(1024)
@@ -324,6 +331,7 @@ class MyFrame(wx.Frame):
         w.add_int(self.cam_id)
         w.encode_header()
         self.write_packet(w)
+        print "message to get image sent\n"
 
 
     def new_data_callback(self, packet):

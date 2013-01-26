@@ -23,6 +23,7 @@
 
 
 import logging
+import datetime
 from math import fabs
 
 import cv
@@ -202,8 +203,8 @@ class RCCamera(PTZCamera):
                           cv.IPL_DEPTH_8U, BGRA, jpeg, frm_time, image_string)
         self.vp.sendMessage(message)
 
-        logging.debug("Sent VV_IMG message to conn:%s, frame_time: %s, jpeg:%s" 
-                      % (self.vp.conn_id, frm_time, jpeg))
+        logging.debug("Sent VV_IMG message to conn:%s, frame_time: %s, jpeg:%s, real-time:%s" 
+                      % (self.vp.conn_id, frm_time, jpeg, datetime.time()))
 
 
     def completeTask(self, task, time):
